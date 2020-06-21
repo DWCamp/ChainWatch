@@ -1,0 +1,6 @@
+{
+  "MYSQL_USERNAME": "ChainWatch",
+  "MYSQL_PASSWORD": "service",
+  "MYSQL_HOST": "localhost",
+  "MYSQL_DATABASE": "ChainWatch"
+}

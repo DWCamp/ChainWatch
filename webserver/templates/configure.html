@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Import the unique CSS for this page -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/configuration.css') }}">
+
+<script>
+    function makeRed(element, buttonId) {
+        element.classList.add("changed");
+        console.log(buttonId);
+        document.getElementById(buttonId).disabled = false;
+    }
+
+    function resetForm(tableId, buttonId) {
+        var table = document.getElementById(tableId);
+        for (var row of table.rows) {
+            if (row.classList.contains("configuration-input")) {
+                var inputField = row.cells[1].children[0];                // Get input field
+                inputField.value = inputField.attributes['value'].value;  // Reset value
+                inputField.classList.remove("changed");
+            }
+        }
+        document.getElementById(buttonId).disabled = true;
+    }
+</script>
+
+<!-- Add js/stylesheet for modal windows -->
+<script src="{{ url_for('static', filename='javascript/modal.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+<div id="modal-container" class="modal">
+    <div class="modal-window">
+        <div class="modal-content">
+            <p>Are you sure?</p>
+        </div>
+        <div class="modal-options">
+            <button class="modal-cancel modal-response" onclick="hideModal()">Cancel</button>
+            <button id="modal-confirm" class="modal-accept modal-response">Yes</button>
+        </div>
+    </div>
+</div>
+
+<div id="configuration-sections">
+    <div id="configure-forms" class="section">
+        <div id="webserver-configure" class="configuration">
+            <form id="webserver-form" action="/configure" method="post">
+                <input type="hidden" name="_package" value="webserver">
+                <table id="webserver-table" class="configuration">
+                    <tr class="configuration-header">
+                        <th colspan="2">webserver</th>
+                    </tr>
+                    {% for attr in webserver %}
+                    <tr class="configuration-input">
+                        <td class="configure-label">{{ attr.name }}</td>
+                        <td class="tooltip">
+                            <input id="{{ 'wb-' + attr.name }}"
+                                   class="configuration"
+                                   type="{{ attr.type }}"
+                                   name="{{ attr.name }}"
+                                   value="{{ attr.value }}"
+                                   oninput="makeRed(this, 'webserver-submit')">
+                            {% if attr.comment %}
+                            <span class="tooltiptext tooltip-right">{{ attr.comment }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="configuration-buttons">
+                        <td class="button-field">
+                            <button class="configure-button"
+                                    type="button"
+                                    onclick="resetForm('webserver-table', 'webserver-submit')">
+                                Reset
+                            </button>
+                        </td>
+                        <td class="button-field">
+                            <button id="webserver-submit" class="configure-button" disabled>Submit</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <script>
+                resetForm("webserver-table", "webserver-submit");
+            </script>
+        </div>
+
+        <br>
+
+        <div id="filewatcher-configure" class="configuration">
+            <form id="filewatcher-form" class="configuration" action="/configure" method="post">
+                <input type="hidden" name="_package" value="filewatcher">
+                <table id="filewatcher-table" class="configuration">
+                    <tr class="configuration">
+                        <th colspan="2">filewatcher</th>
+                    </tr>
+                    {% for attr in filewatcher %}
+                    <tr class="configuration-input">
+                        <td class="configure-label">{{ attr.name }}</td>
+                        <td class="tooltip">
+                            <input id="{{ 'fw-' + attr.name }}"
+                                   class="configuration"
+                                   type="{{ attr.type }}"
+                                   name="{{ attr.name }}"
+                                   value="{{ attr.value }}"
+                                   oninput="makeRed(this, 'filewatcher-submit')">
+                            {% if attr.comment %}
+                            <span class="tooltiptext tooltip-right">{{ attr.comment }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="configuration">
+                        <td class="button-field">
+                            <button class="configure-button"
+                                    type="button"
+                                    onclick="resetForm('filewatcher-table', 'filewatcher-submit')">
+                                Reset
+                            </button>
+                        </td>
+                        <td class="button-field">
+                            <button id="filewatcher-submit" class="configure-button" disabled>
+                                Submit
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <script>
+                resetForm("filewatcher-table", 'filewatcher-submit');
+            </script>
+        </div>
+    </div><div id="configuration-actions">
+        <div id="button-list" class="configuration-action-list">
+            <button class="action" onclick="showModal()">Reset Database</button>
+            <button class="action" onclick="showModal()">Update QR Code</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

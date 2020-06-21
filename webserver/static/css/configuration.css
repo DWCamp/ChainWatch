@@ -1,0 +1,56 @@
+div.configuration {
+    width: 30%;
+}
+
+div#configuration-sections div {
+    display: inline-block;
+}
+
+table.configuration th {
+    padding: 5px;
+}
+
+input.changed {
+    background-color: yellow;
+}
+
+.button-field {
+    padding: 0;
+    background-color: #097DBC;
+}
+
+.configure-label {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.configure-button {
+    width: 100%;
+    border: None;
+    padding: 7px 0;
+    background-color: #097DBC;
+    color: #FFF;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.configure-button:hover {
+    transition: background-color 0.5s ease;
+    background-color: #0B99E6;
+}
+
+.configure-button:disabled {
+    background-color: #CCC;
+    color: #999;
+    cursor: default;
+}
+
+button.action {
+    border-radius: 10px;
+    border: None;
+    padding: 30px;
+    background-color: #097DBC;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+}

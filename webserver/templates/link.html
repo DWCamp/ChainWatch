@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="link-details">
+    <table class="overview-table">
+        <tr>
+            <th colspan="2">Overview</th>
+        </tr>
+        <tr>
+            <td>Last Result</td>
+            <td>{{ link.last_result }}</td>
+        </tr>
+        <tr>
+            <td>Last Image Taken</td>
+            <td>{{ link.last_checked }}</td>
+        </tr>
+    </table>
+</div>
+
+<div id="recent-left">
+    <h2>Most recent left camera images</h2>
+    <table class="details-table">
+        <tr>
+            <th>Loop</th>
+            <th>Date</th>
+            <th>Time (UTC)</th>
+            <th>Pass</th>
+            <th>Image</th>
+        </tr>
+
+        {% for image in left_image_list %}
+        {% if not image.passed %}
+        <tr class="fail">
+        {% else %}
+        <tr>
+        {% endif %}
+            <td>{{ image.loop }}</td>
+            <td>{{ image.date }}</td>
+            <td>{{ image.time }}</td>
+            <td>{{ image.result }}</td>
+            <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div id="recent-right">
+    <h2>Most recent right camera images</h2>
+    <table class="details-table">
+        <tr>
+            <th>Loop</th>
+            <th>Date</th>
+            <th>Time (UTC)</th>
+            <th>Pass</th>
+            <th>Image</th>
+        </tr>
+
+        {% for image in right_image_list %}
+        {% if not image.passed %}
+        <tr class="fail">
+        {% else %}
+        <tr>
+        {% endif %}
+            <td>{{ image.loop }}</td>
+            <td>{{ image.date }}</td>
+            <td>{{ image.time }}</td>
+            <td>{{ image.result }}</td>
+            <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="past-failures">
+    <h2>Other recent failures</h2>
+    <table class="details-table">
+        <tr>
+            <th>Loop</th>
+            <th>Date</th>
+            <th>Time (UTC)</th>
+            <th>Pass</th>
+            <th>Image</th>
+        </tr>
+
+        {% for image in past_failure_list %}
+        <tr class="fail">
+            <td>{{ image.loop }}</td>
+            <td>{{ image.date }}</td>
+            <td>{{ image.time }}</td>
+            <td>{{ image.pass }}</td>
+            <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

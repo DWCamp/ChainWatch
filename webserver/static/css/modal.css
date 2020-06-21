@@ -1,0 +1,61 @@
+div.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    padding-top: 20%;
+    background-color: rgb(80, 80, 80);
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+div.modal-window {
+    width: 30%;
+    background-color: white;
+    color: black;
+    margin: auto;
+}
+
+div.modal-content {
+    padding: 20px;
+    padding-left: 30px;
+}
+
+div.modal-options {
+    padding: 20px;
+    position: relative;
+}
+
+button.modal-response {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    border: None;
+    cursor: pointer;
+}
+
+button.modal-cancel {
+    top: 0;
+    left: 0;
+    background-color: #BD2323;
+    color: white;
+}
+
+button.modal-cancel:hover {
+    transition: background-color 0.2s ease;
+    background-color: #DB0F0F;
+}
+
+button.modal-accept {
+    top: 0;
+    right: 0;
+    background-color: #3A993A;
+    color: white;
+}
+
+button.modal-accept:hover {
+    transition: background-color 0.2s ease;
+    background-color: #46B746;
+}

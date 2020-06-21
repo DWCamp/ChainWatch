@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="overview">
+    <table class="overview-table">
+        <tr><th colspan="2">Overview</th></tr>
+        <tr>
+            <td>Status</td>
+            {% if overview['active'] %}
+                <td class="active">Active</td>
+            {% else %}
+                <td class="inactive">Inactive</td>
+                <!-- Add a new row for the time the line has been offline -->
+                </tr>
+                <tr>
+                    <td>Time Offline</td>
+                    <td>{{ overview['offline_dur'] }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Link Count</td>
+            <td>{{ overview['link_count'] }}</td>
+        </tr>
+        <tr>
+            <td>Images Since Database Reset</td>
+            <td>{{ overview['most_recent']['img_id'] }}</td>
+        </tr>
+        <tr>
+            <td>Current Loop #</td>
+            <td>{{ overview['most_recent']['loop_count'] }}</td>
+        </tr>
+        <tr>
+            <td>Most Recent Link</td>
+            <td>{{ overview['most_recent']['link_id'] }}</td>
+        </tr>
+        <tr>
+            <td>Links at Risk</td>
+            <td>{{ overview['at_risk_str'] }}</td>
+        </tr>
+    </table>
+</div>
+
+<h2>Highest failure rates</h2>
+
+<div class="worst">
+    <table class="list-table">
+        <tr>
+            <th>Link ID</th>
+            <th>Failure Rate</th>
+        </tr>
+    {% for link in overview['worst'] %}
+        <tr>
+            <td><a href="/{{ link['link_id'] }}">{{ link['link_id'] }}</a></td>
+            <td>{{ link['pass_rate'] }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+
+<div class="qr">
+    <a href="/qr"><img src="/qr" title="Site link QR Code" alt="QR Code"></a>
+</div>
+
+{% endblock %}

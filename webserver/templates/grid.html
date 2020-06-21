@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Link Detail Pages</h2>
+
+<div class="sort-toolbar">
+    Sort
+    <div id="link-sort-list" class="sort-list">
+        <button class="sort-option active" onclick="sortGrid(this)">Number</button>
+        <button class="sort-option" onclick="sortGrid(this)">Pass Rate</button>
+    </div>
+</div>
+
+<script>
+    function sortGrid(element) {
+        // Ignore the active sort type
+        if (element.classList.contains('active')) {
+            return;
+        }
+
+        // Switch the highlighted button
+        var sortList = document.getElementById("link-sort-list");
+        for (var button of sortList.children) {
+            button.classList.remove("active");
+        }
+        element.classList.add("active");
+
+        // Sort the grid elements
+        var cellList = document.getElementById("id-links");
+        var cells = Array.prototype.slice.call(cellList.children, 0);
+        switch (element.innerHTML) {
+            case "Pass Rate":
+                var attr = "data-pass-rate";
+                break;
+            default:
+                var attr = "data-id";
+        }
+        cells.sort(function(a, b) {
+            var aVal = parseFloat(a.attributes[attr].value);
+            var bVal = parseFloat(b.attributes[attr].value);
+            return aVal - bVal;
+        });
+        cellList.innerHTML = "";
+        for (var cell of cells) {
+            cellList.appendChild(cell);
+        }
+    }
+</script>
+
+<div id="id-links">
+    {% for link in link_list %}<div class="tooltip" data-id={{ link.link_id }} data-pass-rate={{ link.pass_rate }}>
+        <span class="link-page"><a style="{{ link.style }}" href="/{{link.link_id}}">{{link.link_id}}</a></span>
+        <span class="tooltiptext tooltip-top">
+            <span class="tooltipheader">Link {{ link.link_id }}</span>
+            <span>Pass Rate: {{ link.pass_rate }}%</span>
+        </span>
+    </div>{% endfor %}
+</div>
+
+{% endblock %}
