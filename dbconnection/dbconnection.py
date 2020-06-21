@@ -198,12 +198,16 @@ def get_pass_rates() -> dict:
     Returns the pass rates for every link in a dictionary, where the keys are the ids of each link
     :return: [int: float] A dictionary of each link's pass rate, with the link's id as the key
     """
-    statement = "SELECT link_id, SUM(`passed`) passes, COUNT(*) images FROM images GROUP BY link_id"
+    statement = ("SELECT link_id, AVG(loop_passed) pass_rate FROM "
+                    "(SELECT link_id, loop_count, BIT_AND(passed) loop_passed "
+                    "FROM images "
+                    "GROUP BY link_id, loop_count) AS loops "
+                 "GROUP BY link_id;")
     cursor = connect()
     cursor.execute(statement)
     results = {}
-    for (link_id, passes, images) in cursor:
-        results[link_id] = float(passes/images)
+    for (link_id, pass_rate) in cursor:
+        results[link_id] = float(pass_rate)
     return results
 
 
