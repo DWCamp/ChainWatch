@@ -162,11 +162,13 @@ def find_worst_links(limit: int = 5) -> list:
     :param limit: The number of links to find
     :return: A list of tuples, containing the link ids and their pass rates.
     """
-    statement = ("SELECT link_id, SUM(passed)/COUNT(*) pass_rate "
-                 "FROM images "
+    statement = ("SELECT link_id, AVG(loop_passed) pass_rate FROM "
+                    "(SELECT link_id, loop_count, BIT_AND(passed) loop_passed "
+                    "FROM images "
+                    "GROUP BY link_id, loop_count) AS loops "
                  "GROUP BY link_id "
                  "ORDER BY pass_rate ASC "
-                 f"LIMIT {max(limit, 0)}")  # Prevent negative values from crashing the request
+                 f"LIMIT {max(limit, 0)}")
     cursor = connect()
     cursor.execute(statement)
     links = cursor.fetchall()
@@ -202,7 +204,7 @@ def get_pass_rates() -> dict:
                     "(SELECT link_id, loop_count, BIT_AND(passed) loop_passed "
                     "FROM images "
                     "GROUP BY link_id, loop_count) AS loops "
-                 "GROUP BY link_id;")
+                 "GROUP BY link_id")
     cursor = connect()
     cursor.execute(statement)
     results = {}
