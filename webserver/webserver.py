@@ -15,7 +15,7 @@ import os
 from typing import Optional
 
 from flask import Flask
-from flask import redirect, render_template, request, send_from_directory, url_for
+from flask import jsonify, redirect, render_template, request, send_from_directory, url_for
 import qrcode
 
 from dbconnection import dbconnection
@@ -61,6 +61,21 @@ def create_qr():
     ip_addr = stream.read().strip()
     qr_img = qrcode.make(f"http://{ip_addr}:{PORT}")
     qr_img.save(os.path.join(app.root_path, 'static/qr_code.jpg'))
+
+
+def error_code(message):
+    """
+    Returns a jsonify response with a given error message
+    :param message: The message to include in the error response
+    :return: The jsonify response
+    """
+    return jsonify({
+        "status": "error",
+        "code": 400,
+        "data": {
+            "message": message
+        }
+    }), 400
 
 
 def json_to_list(config: dict) -> list:
@@ -264,6 +279,7 @@ def link_page(link_id: int):
         past_failure_list.append(img_data)
 
     """ Compile link overview """
+
     # Check if the most recent images on either the left or right were a failure
     last_result = True
     if len(left_image_list) > 0:
@@ -331,6 +347,31 @@ def documentation():
 
 
 # ----------------------- Hidden pages
+
+@app.route('/api', methods=['GET'])
+def api():
+    action = request.args.get('action')
+    param = request.args.get('param')
+    if action is None:
+        return error_code("No 'action' provided")
+    if action == 'updateQR':
+        create_qr()
+    elif action == 'resetDB':
+        if param:
+            try:
+                param = int(param)
+            except ValueError:
+                error_code(f"'{param}' is not a valid integer")
+            dbconnection.clear_img_database(param)
+        else:
+            print("CLEAR DB!!!!")
+            # dbconnection.clear_img_database()
+    else:
+        return error_code(f"The action '{action}' is not supported")
+    return jsonify({
+        "status": "ok",
+        "code": 200
+    })
 
 
 @app.route('/imgs/<path:filename>')

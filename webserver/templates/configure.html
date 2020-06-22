@@ -22,6 +22,23 @@
         }
         document.getElementById(buttonId).disabled = true;
     }
+
+    function sendAction(action, param) {
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    console.log("Done!");
+                } else {
+                    console.log("Failure.");
+                }
+                hideModal();
+            }
+        };
+        var param_arg = param ? `&param=${param}` : '';
+        req.open("GET", `/api?action=${action}${param_arg}`, true);
+        req.send();
+    }
 </script>
 
 <!-- Add js/stylesheet for modal windows -->
@@ -30,7 +47,8 @@
 <div id="modal-container" class="modal">
     <div class="modal-window">
         <div class="modal-content">
-            <p>Are you sure?</p>
+            <p><strong>Are you sure?</strong></p>
+            <p>(This action cannot be undone)</p>
         </div>
         <div class="modal-options">
             <button class="modal-cancel modal-response" onclick="hideModal()">Cancel</button>
@@ -41,7 +59,7 @@
 
 <div id="configuration-sections">
     <div id="configure-forms" class="section">
-        <div id="webserver-configure" class="configuration">
+        <div id="webserver-configure" class="configuration-form">
             <form id="webserver-form" action="/configure" method="post">
                 <input type="hidden" name="_package" value="webserver">
                 <table id="webserver-table" class="configuration">
@@ -85,7 +103,7 @@
 
         <br>
 
-        <div id="filewatcher-configure" class="configuration">
+        <div id="filewatcher-configure" class="configuration-form">
             <form id="filewatcher-form" class="configuration" action="/configure" method="post">
                 <input type="hidden" name="_package" value="filewatcher">
                 <table id="filewatcher-table" class="configuration">
@@ -128,10 +146,10 @@
                 resetForm("filewatcher-table", 'filewatcher-submit');
             </script>
         </div>
-    </div><div id="configuration-actions">
+    </div><div id="configuration-actions" class="section">
         <div id="button-list" class="configuration-action-list">
-            <button class="action" onclick="showModal()">Reset Database</button>
-            <button class="action" onclick="showModal()">Update QR Code</button>
+            <button class="action" onclick="sendAction('updateQR')">Update QR Code</button>
+            <button class="action danger" onclick="modalAction('resetDB')">Reset Database</button>
         </div>
     </div>
 </div>

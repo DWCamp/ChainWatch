@@ -2,12 +2,44 @@ div.configuration {
     width: 30%;
 }
 
+div#configuration-sections {
+    display: inline-block;
+    width: 100%;
+}
+
 div#configuration-sections div {
     display: inline-block;
 }
 
+div.configuration-form {
+    width: 100%;
+}
+
+form.configuration {
+    width: 100%;
+}
+
+div.section {
+    width: 30%;
+    margin: 10px;
+}
+
+table.configuration {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
 table.configuration th {
     padding: 5px;
+}
+
+table.configuration tr {
+    padding-right: 0;
+}
+
+input.configuration {
+    width: 100%;
+    padding: 3px 5px;
 }
 
 input.changed {
@@ -45,12 +77,33 @@ input.changed {
     cursor: default;
 }
 
+div#configuration-actions {
+    float: right;
+}
+
 button.action {
+    width: 80%;
     border-radius: 10px;
     border: None;
-    padding: 30px;
+    padding: 10px;
     background-color: #097DBC;
     color: white;
     font-size: 1.5em;
     cursor: pointer;
+    margin: 5px 10%;
+}
+
+button.action:hover {
+    transition: background-color 0.2s ease;
+    background-color: #0B99E6;
+}
+
+button.danger {
+    background-color: #BD2323;
+    color: white;
+}
+
+button.danger:hover {
+    transition: background-color 0.2s ease;
+    background-color: #DB0F0F;
 }

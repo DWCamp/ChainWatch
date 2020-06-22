@@ -12,6 +12,10 @@ function hideModal() {
     confirm.removeAttribute("onclick");
 }
 
+function modalAction(action, param) {
+    showModal(function() { return sendAction(action, param); });
+}
+
 // Hide pop-up when user clicks outside of modal
 window.onclick = function(event) {
     if (event.target == document.getElementById("modal-container")) {
