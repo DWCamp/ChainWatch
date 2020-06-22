@@ -281,15 +281,28 @@ def link_page(link_id: int):
     """ Compile link overview """
 
     # Check if the most recent images on either the left or right were a failure
-    last_result = True
-    if len(left_image_list) > 0:
-        last_result = left_image_list[0]['passed']
-    if len(right_image_list) > 0:
-        last_result = last_result and right_image_list[0]['passed']  # Combine the left result with the right result
+    if len(left_image_list) == 0 and len(right_image_list) == 0:
+        # Set last result to `None` if there are no images
+        last_result = "N/A"
+    else:
+        passed_recent = True
+        if len(left_image_list) > 0:
+            passed_recent = left_image_list[0]['passed']
+        if len(right_image_list) > 0:
+            # Combine the left result with the right result
+            passed_recent = passed_recent and right_image_list[0]['passed']
+        last_result = "PASS" if passed_recent else "FAIL"
+
+    # Get the timestamp of the most recent link inspection, or 'N/A' if no links inspected
+    if len(link['image_list']) > 0:
+        last_checked = link['image_list'][0]["time"].strftime('%H:%M - %m/%d/%Y')
+    else:
+        last_checked = "N/A"
+
     link_data = {
         "id": link_id,
-        "last_checked": link['image_list'][0]["time"].strftime('%H:%M - %m/%d/%Y'),
-        "last_result": "PASS" if last_result else "FAIL",
+        "last_checked": last_checked,
+        "last_result": last_result,
     }
 
     return render_template('link.html',
@@ -357,6 +370,9 @@ def api():
     if action == 'updateQR':
         create_qr()
     elif action == 'resetDB':
+        print("CLEAR DB!!!!")
+        # dbconnection.clear_img_database()
+    elif action == 'resetLink':
         if param:
             try:
                 param = int(param)
@@ -364,8 +380,7 @@ def api():
                 error_code(f"'{param}' is not a valid integer")
             dbconnection.clear_img_database(param)
         else:
-            print("CLEAR DB!!!!")
-            # dbconnection.clear_img_database()
+            return error_code("No link id specified")
     elif action == 'restartServer':
         # Immediately kills the app without responding
         print('Killing server...')
