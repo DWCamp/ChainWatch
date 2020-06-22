@@ -366,6 +366,13 @@ def api():
         else:
             print("CLEAR DB!!!!")
             # dbconnection.clear_img_database()
+    elif action == 'restartServer':
+        # Immediately kills the app without responding
+        print('Killing server...')
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
     else:
         return error_code(f"The action '{action}' is not supported")
     return jsonify({
@@ -394,7 +401,7 @@ def qr():
 
 
 def start(port: int = None):
-    global HOSTNAME, PORT
+    global app, HOSTNAME, PORT
     load_config()
     PORT = CONFIG['PORT'] if port is None else port
     create_qr()
