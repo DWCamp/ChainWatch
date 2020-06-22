@@ -1,0 +1,12 @@
+[Unit]
+Description=ChainWatch server for webpages displaying pictures and failure rates
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1s
+ExecStart=/usr/bin/python3 -m webserver
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target

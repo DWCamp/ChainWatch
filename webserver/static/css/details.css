@@ -1,0 +1,12 @@
+tr.fail {
+    background-color: #FFE6E7;
+}
+
+tr.fail:nth-child(even) {
+  background-color: #FFCFD1;
+}
+
+div.link-details {
+    margin-top: 15px;
+    margin-bottom: 50px;
+}

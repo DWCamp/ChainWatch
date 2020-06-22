@@ -232,7 +232,6 @@ def link_page(link_id: int):
 
     for image in link['image_list']:
         image["passed"] = bool(image["passed"])
-        image["left_camera"] = bool(image["left_camera"])
         img_data = {
             "date": image["time"].strftime('%Y-%m-%d'),
             "file": os.path.basename(image["filepath"]),
@@ -242,7 +241,7 @@ def link_page(link_id: int):
             "time": image["time"].strftime('%H:%M:%S'),
             "timestamp": image["time"]  # Leave time stamp intact for sorting
         }
-        if image['left_camera']:
+        if image["left_camera"]:
             left_image_list.append(img_data)
         else:
             right_image_list.append(img_data)
@@ -253,6 +252,7 @@ def link_page(link_id: int):
         image["passed"] = bool(image["passed"])
         image["left_camera"] = bool(image["left_camera"])
         img_data = {
+            "camera": "Left" if image["left_camera"] else "Right",
             "date": image["time"].strftime('%Y-%m-%d'),
             "file": os.path.basename(image["filepath"]),
             "loop": image["loop_count"],

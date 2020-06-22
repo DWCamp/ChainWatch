@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Import the unique CSS for this page -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/details.css') }}">
 
 <div class="link-details">
     <table class="overview-table">
@@ -77,6 +79,7 @@
     <table class="details-table">
         <tr>
             <th>Loop</th>
+            <th>Camera</th>
             <th>Date</th>
             <th>Time (UTC)</th>
             <th>Pass</th>
@@ -86,9 +89,10 @@
         {% for image in past_failure_list %}
         <tr class="fail">
             <td>{{ image.loop }}</td>
+            <td>{{ image.camera }}</td>
             <td>{{ image.date }}</td>
             <td>{{ image.time }}</td>
-            <td>{{ image.pass }}</td>
+            <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
         </tr>
         {% endfor %}

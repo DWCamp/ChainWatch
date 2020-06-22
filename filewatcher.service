@@ -1,0 +1,12 @@
+[Unit]
+Description=Logs and moves received FTP files for ChainWatch
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1s
+ExecStart=/usr/bin/python3 -m filewatcher /home/sick1 -S
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target

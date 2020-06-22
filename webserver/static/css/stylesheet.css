@@ -34,6 +34,7 @@ h1 {
 table {
     border-collapse: collapse;
     text-align: center;
+    color: black;
 }
 
 .details-table {
@@ -177,85 +178,4 @@ td.inactive {
 
 .qr img {
     height: 25%;
-}
-
-/* ------ Grid Page ------ */
-
-#id-links {
-  margin: 0 40px;
-}
-
-span.link-page {
-    display: inline-block;
-    border: 1px solid black;
-}
-
-span.link-page a {
-    display: block;
-    width: 50px;
-    line-height: 50px;
-    
-    text-decoration: none;
-    text-align: center;
-
-    background-color: #DDD;
-    color: black;
-}
-
-span.link-page a:hover {
-    background-color: #CCC;
-}
-
-span.link-page a:visited {
-    color: black;
-}
-
-.sort-toolbar {
-    font-size: 1.1em;
-    margin: 5px 5px 10px 40px;
-    background-color: #097DBC;
-    color: white;
-    padding: 10px 30px 10px 20px;
-    border-radius: 5px;
-    display: inline-block;
-}
-
-.sort-list {
-    display: inline-block;
-    margin-left: 5px;
-}
-
-.sort-option {
-    font-size: 1em;
-    background-color: #CECECE;
-    color: black;
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: None;
-}
-
-.sort-option:hover:not(.active) {
-    transition: background-color 0.2s ease;
-    background-color: #DDD;
-}
-
-.sort-option.active {
-    background-color: white;
-    color: #097DBC;
-    cursor: inherit;
-}
-
-/* ------ Link Details Page ------ */
-
-tr.fail {
-    background-color: #FFE6E7;
-}
-
-tr.fail:nth-child(even) {
-  background-color: #FFCFD1;
-}
-
-div.link-details {
-    margin-top: 15px;
-    margin-bottom: 50px;
 }
