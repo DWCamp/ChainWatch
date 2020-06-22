@@ -10,3 +10,30 @@ div.link-details {
     margin-top: 15px;
     margin-bottom: 50px;
 }
+
+div.link-overview {
+    display: inline-block;
+}
+
+div.link-delete {
+    float: right;
+    width: 15%;
+}
+
+button.delete-button {
+    float: right;
+    width: 100%;
+    border-radius: 10px;
+    border: None;
+    padding: 10px;
+    background-color: #BD2323;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    margin: 5px 10%;
+}
+
+button.delete-button:hover {
+    transition: background-color 0.2s ease;
+    background-color: #DB0F0F;
+}

@@ -3,21 +3,63 @@
 {% block content %}
 <!-- Import the unique CSS for this page -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/details.css') }}">
+<script>
+    function confirmDelete() {
+       showModal(function() { return deleteLink(); });
+    }
+
+    function deleteLink() {
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    hideModal();
+                    window.location.replace("/grid");
+                } else {
+                    console.log("Failure.");
+                }
+            }
+        };
+        req.open("GET", "/api?action=resetLink&param={{ link.id }}", true);
+        req.send();
+    }
+</script>
+
+<!-- Add js/stylesheet for modal windows -->
+<script src="{{ url_for('static', filename='javascript/modal.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+<div id="modal-container" class="modal">
+    <div class="modal-window modal-window-wide">
+        <div class="modal-content">
+            <p><strong>Are you sure you want to remove Link {{ link.id }} from the database?</strong></p>
+            <p>(This will not delete any images from this link's past inspections)</p>
+        </div>
+        <div class="modal-options">
+            <button class="modal-cancel modal-response" onclick="hideModal()">Cancel</button>
+            <button id="modal-confirm" class="modal-accept modal-response">Yes</button>
+        </div>
+    </div>
+</div>
 
 <div class="link-details">
-    <table class="overview-table">
-        <tr>
-            <th colspan="2">Overview</th>
-        </tr>
-        <tr>
-            <td>Last Result</td>
-            <td>{{ link.last_result }}</td>
-        </tr>
-        <tr>
-            <td>Last Image Taken</td>
-            <td>{{ link.last_checked }}</td>
-        </tr>
-    </table>
+    <div class="link-overview">
+        <table class="overview-table">
+            <tr>
+                <th colspan="2">Overview</th>
+            </tr>
+            <tr>
+                <td>Last Result</td>
+                <td>{{ link.last_result }}</td>
+            </tr>
+            <tr>
+                <td>Last Image Taken</td>
+                <td>{{ link.last_checked }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="link-delete">
+        <button class="delete-button" onclick="confirmDelete()">Delete Link</button>
+    </div>
 </div>
 
 <div id="recent-left">

@@ -18,6 +18,10 @@ div.modal-window {
     margin: auto;
 }
 
+div.modal-window-wide {
+    width: 50%;
+}
+
 div.modal-content {
     padding: 20px;
     padding-left: 30px;
