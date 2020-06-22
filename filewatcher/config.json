@@ -11,9 +11,9 @@
   "_comment_PASS_TAG": "The inspection result that indicates no crack was found",
   "PASS_TAG": "GOOD",
   "_comment_FAIL_TAG": "The inspection result that indicates a crack was found",
-  "FAIL_TAG": "RIGHT",
+  "FAIL_TAG": "FAIL",
   "_comment_UNKNOWN_TAG": "The inspection result that indicates the camera did not identify a link",
   "UNKNOWN_TAG": "NOMATCH",
   "_comment_IMG_DESTINATION": "The destination folder to send processed images files",
-  "IMG_DESTINATION": "/srv/ftp/"
+  "IMG_DESTINATION": "/srv/storage/ChainWatch"
 }

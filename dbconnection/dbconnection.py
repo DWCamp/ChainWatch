@@ -125,6 +125,17 @@ def count_links() -> int:
     return cursor.fetchone()[0]
 
 
+def delete_image(img_id: int, past_failure=False) -> None:
+    """
+    Deletes an image from the database
+
+    :param img_id: The id of the image
+    :param past_failure: `False` if this image is from the images table.
+        `True` if it's from the past_failure table
+    """
+    statement = f"DELETE FROM {'past_failures' if past_failure else 'images'}"
+
+
 def fetch_link(link_id: int) -> dict:
     """
     Fetches the details on a given link from the database
@@ -271,6 +282,7 @@ def trim_images(link: int, keep_recent: int, keep_failures: int) -> None:
 # ===================================    CONFIG TABLE    ================================================
 # =======================================================================================================
 
+# Note: This has been added for building additional features. It does not have any use at present.
 
 def get_attribute(attribute: str) -> Optional[str]:
     """

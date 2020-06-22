@@ -16,7 +16,6 @@ from typing import Optional
 
 from flask import Flask
 from flask import jsonify, redirect, render_template, request, send_from_directory, url_for
-import qrcode
 
 from dbconnection import dbconnection
 from config import Config
@@ -56,9 +55,17 @@ nav_list = [
 
 
 def create_qr():
+    # If the module is not present, abort silently
+    try:
+        import qrcode
+    except ModuleNotFoundError:
+        return
     # Unfortunately, this is the only way to reliably get the current IP address on a Debian system
     stream = os.popen('hostname -I')  # Run Linux on
     ip_addr = stream.read().strip()
+
+    """ Generate QR code and save in static directory """
+
     qr_img = qrcode.make(f"http://{ip_addr}:{PORT}")
     qr_img.save(os.path.join(app.root_path, 'static/qr_code.jpg'))
 

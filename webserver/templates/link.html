@@ -124,7 +124,6 @@
             <th>Camera</th>
             <th>Date</th>
             <th>Time (UTC)</th>
-            <th>Pass</th>
             <th>Image</th>
         </tr>
 
@@ -134,7 +133,6 @@
             <td>{{ image.camera }}</td>
             <td>{{ image.date }}</td>
             <td>{{ image.time }}</td>
-            <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
         </tr>
         {% endfor %}

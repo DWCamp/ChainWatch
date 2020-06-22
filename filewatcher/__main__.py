@@ -4,6 +4,7 @@
 import argparse
 from datetime import datetime
 import os
+import shutil
 # Personal imports
 from filewatcher import FileWatcher, FileEvent
 import dbconnection
@@ -92,8 +93,8 @@ def detect_file(data: (FileEvent, str, str)) -> None:
     source = f"{dir_path}/{name}"
     filename, file_ext = os.path.splitext(name)
     new_name = f"{filename}_{int(time.timestamp())}{file_ext}"
-    dest = CONFIG['IMG_DESTINATION'] + new_name
-    os.rename(source, dest)  # Move the file into the destination folder
+    dest = f"{CONFIG['IMG_DESTINATION']}/{new_name}"
+    shutil.move(source, dest)  # Move the file into the destination folder
     dbconnection.log_image(link_id, loop_count, left_camera, passed, dest)  # Record image to database
     dbconnection.trim_images(link_id, CONFIG['RECENT_IMAGE_LIMIT'], CONFIG['FAIL_IMAGE_LIMIT'])
 
