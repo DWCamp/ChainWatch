@@ -20,7 +20,7 @@ def parse_name(file_name: str):
     """
     Parses a filename of the structure
 
-        <NAME>_(GOOD/FAIL)_LP-#1_ID-#2.jpg
+        <NAME>_(GOOD/FAIL/UNKNOWN)_LP-#1_ID-#2.jpg
 
     Where `<NAME>` is the camera's name (as defined in the config file), `#1` is the loop count,
     and `#2` is the ID count. None of these values should be zero padded
@@ -44,7 +44,15 @@ def parse_name(file_name: str):
 
     # Check which camera was used
     camera = parsed.group(1)
-    passed = parsed.group(2) == "GOOD"
+    if parsed.group(2) == CONFIG['PASS_TAG']:
+        passed = True
+    elif parsed.group(2) == CONFIG['FAIL_TAG']:
+        passed = False
+    elif parsed.group(2) == CONFIG['UNKNOWN_TAG']:
+        passed = None
+    else:
+        print(f"Unrecognized inspection result `{parsed.group(2)}`")
+        return None
     loop_id = int(parsed.group(3))
     link_id = int(parsed.group(4))
     return passed, loop_id, link_id, camera

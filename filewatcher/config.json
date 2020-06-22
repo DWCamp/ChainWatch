@@ -1,12 +1,19 @@
 {
-  "_comment_LEFT_CAMERA": "The name of the left camera as it appears in the filename",
-  "LEFT_CAMERA": "LEFT",
-  "_comment_RIGHT_CAMERA": "The name of the right camera as it appears in the filename",
-  "RIGHT_CAMERA": "RIGHT",
   "_comment_FAIL_IMAGE_LIMIT": "The maximum number of FAIL images to keep",
   "FAIL_IMAGE_LIMIT": 15,
   "_comment_RECENT_IMAGE_LIMIT": "The maximum number of the most recent images to keep",
   "RECENT_IMAGE_LIMIT": 20,
+
+  "_comment_LEFT_CAMERA": "The name of the left camera as it appears in the filename",
+  "LEFT_CAMERA": "LEFT",
+  "_comment_RIGHT_CAMERA": "The name of the right camera as it appears in the filename",
+  "RIGHT_CAMERA": "RIGHT",
+  "_comment_PASS_TAG": "The inspection result that indicates no crack was found",
+  "PASS_TAG": "GOOD",
+  "_comment_FAIL_TAG": "The inspection result that indicates a crack was found",
+  "FAIL_TAG": "RIGHT",
+  "_comment_UNKNOWN_TAG": "The inspection result that indicates the camera did not identify a link",
+  "UNKNOWN_TAG": "NOMATCH",
   "_comment_IMG_DESTINATION": "The destination folder to send processed images files",
   "IMG_DESTINATION": "/srv/ftp/"
 }
