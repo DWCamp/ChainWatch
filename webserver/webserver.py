@@ -275,6 +275,7 @@ def link_page(link_id: int):
         image["passed"] = bool(image["passed"])
         image["left_camera"] = bool(image["left_camera"])
         img_data = {
+            "id": image["img_id"],
             "camera": "Left" if image["left_camera"] else "Right",
             "date": image["time"].strftime('%Y-%m-%d'),
             "file": os.path.basename(image["filepath"]),
@@ -375,14 +376,14 @@ def api():
     param = request.args.get('param')
     if action is None:
         return error_code("No 'action' provided")
-    elif action in ['deleteImage', 'deleteFailure']:
+    elif action in ['deleteImg', 'deleteFailure']:
         if param is None:
             return error_code(f"No image id provided")
         try:
             param = int(param)
         except ValueError:
             error_code(f"'{param}' is not a valid integer")
-        dbconnection.delete_image(param, action == 'deleteImage')
+        dbconnection.delete_image(param, past_failure=(action == 'deleteFailure'))
         print(f"Deleted image {param}")
     elif action == 'resetDB':
         dbconnection.clear_img_database()

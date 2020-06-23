@@ -24,7 +24,7 @@
         req.send();
     }
 
-    function deleteLink(img) {
+    function deleteImg(img, pf) {
         var req = new XMLHttpRequest();
         req.onreadystatechange = function() {
             if (this.readyState == 4) {
@@ -36,7 +36,7 @@
                 }
             }
         };
-        req.open("GET", `/api?action=deleteImg&param=${img}`, true);
+        req.open("GET", `/api?action=${pf ? 'deleteFailure' : 'deleteImg'}&param=${img}`, true);
         req.send();
     }
 </script>
@@ -65,7 +65,13 @@
             </tr>
             <tr>
                 <td>Last Result</td>
-                <td>{{ link.last_result }}</td>
+                {% if link.last_result == 'PASS' %}
+                    <td class="active">PASS</td>
+                {% elif link.last_result == 'FAIL' %}
+                    <td class="inactive">FAIL</td>
+                {% else %}
+                    <td>N/A</td>
+                {% endif %}
             </tr>
             <tr>
                 <td>Last Image Taken</td>
@@ -101,7 +107,7 @@
             <td>{{ image.time }}</td>
             <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
-        <td><button class="img-delete" onclick="deleteImg({{ image.id }})">&times;</button></td>
+        <td><button class="img-delete" onclick="deleteImg({{ image.id }}, false)">&times;</button></td>
         </tr>
         {% endfor %}
     </table>
@@ -116,6 +122,7 @@
             <th>Time (UTC)</th>
             <th>Pass</th>
             <th>Image</th>
+            <th>Delete</th>
         </tr>
 
         {% for image in right_image_list %}
@@ -129,6 +136,7 @@
             <td>{{ image.time }}</td>
             <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
+            <td><button class="img-delete" onclick="deleteImg({{ image.id }}, false)">&times;</button></td>
         </tr>
         {% endfor %}
     </table>
@@ -143,6 +151,7 @@
             <th>Date</th>
             <th>Time (UTC)</th>
             <th>Image</th>
+            <th>Delete</th>
         </tr>
 
         {% for image in past_failure_list %}
@@ -152,6 +161,7 @@
             <td>{{ image.date }}</td>
             <td>{{ image.time }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
+            <td><button class="img-delete" onclick="deleteImg({{ image.id }}, true)">&times;</button></td>
         </tr>
         {% endfor %}
     </table>
