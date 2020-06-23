@@ -180,7 +180,7 @@ def index():
 
         # See if line is active, i.e. has inspected a chain within a given time frame
         # If inactive, calculate create a string representing the time the system has been offline
-        time_elapsed = datetime.utcnow() - overview['most_recent']['time']
+        time_elapsed = datetime.now() - overview['most_recent']['time']
         overview['active'] = time_elapsed < timedelta(seconds=CONFIG['ACTIVE_DELAY'])
         if not overview['active']:
             hours, remainder = divmod(time_elapsed.seconds, 3600)

@@ -36,6 +36,8 @@ button.link-delete {
 button.img-delete {
     background-color: #BD2323;
     color: white;
+    font-weight: bold;
+    font-size: 1.2em;
     padding: 5px;
     border: None;
     border-radius: 3px;
