@@ -74,6 +74,9 @@ def detect_file(data: (FileEvent, str, str)) -> None:
         return
 
     # Parse filename
+    file_data = parse_name(name)
+    if file_data is None:
+        return
     (passed, loop_count, link_id, camera) = parse_name(name)
     (root, parent_dir) = os.path.split(dir_path)
     print(f"Found `{name}` from camera `{parent_dir}`")

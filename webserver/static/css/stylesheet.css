@@ -148,6 +148,12 @@ li.currentPage {
   padding-right: 25px;
 }
 
+img.cw-logo {
+    float: right;
+    margin-right: 10px;
+    height: 62px;
+}
+
 /* ------ Home Page ------ */
 
 td.active {

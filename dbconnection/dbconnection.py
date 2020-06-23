@@ -133,7 +133,12 @@ def delete_image(img_id: int, past_failure=False) -> None:
     :param past_failure: `False` if this image is from the images table.
         `True` if it's from the past_failure table
     """
-    statement = f"DELETE FROM {'past_failures' if past_failure else 'images'}"
+    statement = f"DELETE FROM {'past_failures' if past_failure else 'images'} WHERE img_id=%(img_id)s"
+    data = {
+        "img_id": img_id
+    }
+    cursor = connect()
+    cursor.execute(statement, data)
 
 
 def fetch_link(link_id: int) -> dict:

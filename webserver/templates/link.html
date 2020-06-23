@@ -23,6 +23,22 @@
         req.open("GET", "/api?action=resetLink&param={{ link.id }}", true);
         req.send();
     }
+
+    function deleteLink(img) {
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    hideModal();
+                    location.reload();
+                } else {
+                    console.log("Failure.");
+                }
+            }
+        };
+        req.open("GET", `/api?action=deleteImg&param=${img}`, true);
+        req.send();
+    }
 </script>
 
 <!-- Add js/stylesheet for modal windows -->
@@ -58,7 +74,7 @@
         </table>
     </div>
     <div class="link-delete">
-        <button class="delete-button" onclick="confirmDelete()">Delete Link</button>
+        <button class="link-delete" onclick="confirmDelete()">Delete Link</button>
     </div>
 </div>
 
@@ -84,6 +100,7 @@
             <td>{{ image.time }}</td>
             <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
+        <td><button class="img-delete" onclick="deleteImg({{ image.id }})">&times;</button></td>
         </tr>
         {% endfor %}
     </table>

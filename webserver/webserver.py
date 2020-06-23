@@ -255,6 +255,7 @@ def link_page(link_id: int):
     for image in link['image_list']:
         image["passed"] = bool(image["passed"])
         img_data = {
+            "id": image["img_id"],
             "date": image["time"].strftime('%Y-%m-%d'),
             "file": os.path.basename(image["filepath"]),
             "loop": image["loop_count"],
@@ -374,20 +375,26 @@ def api():
     param = request.args.get('param')
     if action is None:
         return error_code("No 'action' provided")
-    if action == 'updateQR':
-        create_qr()
+    elif action in ['deleteImage', 'deleteFailure']:
+        if param is None:
+            return error_code(f"No image id provided")
+        try:
+            param = int(param)
+        except ValueError:
+            error_code(f"'{param}' is not a valid integer")
+        dbconnection.delete_image(param, action == 'deleteImage')
+        print(f"Deleted image {param}")
     elif action == 'resetDB':
-        print("CLEAR DB!!!!")
-        # dbconnection.clear_img_database()
+        dbconnection.clear_img_database()
+        print("Database cleared")
     elif action == 'resetLink':
-        if param:
-            try:
-                param = int(param)
-            except ValueError:
-                error_code(f"'{param}' is not a valid integer")
-            dbconnection.clear_img_database(param)
-        else:
+        if not param:
             return error_code("No link id specified")
+        try:
+            param = int(param)
+        except ValueError:
+            error_code(f"'{param}' is not a valid integer")
+        dbconnection.clear_img_database(param)
     elif action == 'restartServer':
         # Immediately kills the app without responding
         print('Killing server...')
@@ -395,6 +402,8 @@ def api():
         if func is None:
             raise RuntimeError('Not running with the Werkzeug Server')
         func()
+    elif action == 'updateQR':
+        create_qr()
     else:
         return error_code(f"The action '{action}' is not supported")
     return jsonify({
