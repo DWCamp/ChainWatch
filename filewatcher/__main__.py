@@ -166,9 +166,9 @@ if __name__ == "__main__":
     # Start and run the watchdog
     watchdog = FileWatcher(args.paths,
                            recursive=args.recursive,
-                           threaded_events=args.recursive)          # Create the FileWatcher object
-    watchdog.register_target(reload, events=FileEvent.CLOSE_WRITE)  # Reload config file when modified
-    watchdog.register_target(detect_file, events=FileEvent.CREATE)  # Watch FTP directory
+                           threaded_events=args.recursive)               # Create the FileWatcher object
+    watchdog.register_target(reload, events=FileEvent.CLOSE_WRITE)       # Reload config file when modified
+    watchdog.register_target(detect_file, events=FileEvent.CLOSE_WRITE)  # Watch FTP directory
     print("Starting filewatcher...")
-    watchdog.start()                                                # Begin watching the directory
-    dbconnection.close()                                            # Close database
+    watchdog.start()                                                     # Begin watching the directory
+    dbconnection.close()                                                 # Close database

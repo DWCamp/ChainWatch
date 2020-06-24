@@ -79,8 +79,13 @@
             </tr>
         </table>
     </div>
-    <div class="link-delete">
-        <button class="link-delete" onclick="confirmDelete()">Delete Link</button>
+    <div class="action-container">
+        <div class="link-slideshow">
+            <button class="action" onclick="window.location.replace('/slideshow/{{ link.id }}')">View images</button>
+        </div>
+        <div class="link-delete">
+            <button class="action danger" onclick="confirmDelete()">Delete Link</button>
+        </div>
     </div>
 </div>
 
@@ -97,7 +102,9 @@
         </tr>
 
         {% for image in left_image_list %}
-        {% if not image.passed %}
+        {% if image.passed is none %}
+        <tr class="nomatch">
+        {% elif not image.passed %}
         <tr class="fail">
         {% else %}
         <tr>
@@ -107,7 +114,7 @@
             <td>{{ image.time }}</td>
             <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
-        <td><button class="img-delete" onclick="deleteImg({{ image.id }}, false)">&times;</button></td>
+        <td><button class="img-delete danger" onclick="deleteImg({{ image.id }}, false)">&times;</button></td>
         </tr>
         {% endfor %}
     </table>
@@ -126,7 +133,9 @@
         </tr>
 
         {% for image in right_image_list %}
-        {% if not image.passed %}
+        {% if image.passed is none %}
+        <tr class="nomatch">
+        {% elif not image.passed %}
         <tr class="fail">
         {% else %}
         <tr>
@@ -136,7 +145,7 @@
             <td>{{ image.time }}</td>
             <td>{{ image.result }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
-            <td><button class="img-delete" onclick="deleteImg({{ image.id }}, false)">&times;</button></td>
+            <td><button class="img-delete danger" onclick="deleteImg({{ image.id }}, false)">&times;</button></td>
         </tr>
         {% endfor %}
     </table>
@@ -155,13 +164,17 @@
         </tr>
 
         {% for image in past_failure_list %}
+        {% if image.passed is none %}
+        <tr class="nomatch">
+        {% else %}
         <tr class="fail">
+        {% endif %}
             <td>{{ image.loop }}</td>
             <td>{{ image.camera }}</td>
             <td>{{ image.date }}</td>
             <td>{{ image.time }}</td>
             <td><a href="{{ url_for('imgs', filename=image.file) }}">File</a></td>
-            <td><button class="img-delete" onclick="deleteImg({{ image.id }}, true)">&times;</button></td>
+            <td><button class="img-delete danger" onclick="deleteImg({{ image.id }}, true)">&times;</button></td>
         </tr>
         {% endfor %}
     </table>

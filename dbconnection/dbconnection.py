@@ -66,10 +66,8 @@ def log_image(link_id: int, loop: int, left_camera: bool, passed: bool, file_pat
         'filepath': file_path
     }
     cursor = connect()  # Verify database connection
-    _cnx.start_transaction()
     cursor.execute(statement, data)
     _last_id = cursor.lastrowid
-    _cnx.commit()
 
 
 def clear_img_database(link_id: int = None) -> None:
@@ -80,13 +78,20 @@ def clear_img_database(link_id: int = None) -> None:
     :param link_id: Specifies a single link to be removed
     """
     if link_id:
-        statement = f"DELETE FROM images WHERE link_id={link_id}"
+        imgs_statement = f"DELETE FROM images WHERE link_id={link_id}"
     else:
-        statement = "DELETE FROM images"
+        imgs_statement = "DELETE FROM images"
     cursor = connect()
-    _cnx.start_transaction()
-    cursor.execute(statement)
-    _cnx.commit()
+    if link_id:
+        failures_statement = f"DELETE FROM past_failures WHERE link_id={link_id}"
+    else:
+        failures_statement = "DELETE FROM past_failures"
+    try:
+        cursor.execute(imgs_statement)
+        cursor.execute(failures_statement)
+    except Exception as e:
+        close()
+        print(e)
 
 
 def count_at_risk(threshold: float) -> int:
@@ -120,6 +125,19 @@ def count_links() -> int:
     :return: The number of links in the database
     """
     statement = "SELECT COUNT(DISTINCT(link_id)) FROM images"
+    cursor = connect()
+    cursor.execute(statement)
+    return cursor.fetchone()[0]
+
+
+def count_no_match() -> float:
+    """
+    Returns the number of images which are null/NOMATCH
+
+    :return: The number of images that are null/NOMATCH.
+        If there are no images in the database, this value is None
+    """
+    statement = "SELECT COUNT(*) null_images FROM images WHERE passed IS NULL"
     cursor = connect()
     cursor.execute(statement)
     return cursor.fetchone()[0]
@@ -219,6 +237,7 @@ def get_pass_rates() -> dict:
     statement = ("SELECT link_id, AVG(loop_passed) pass_rate FROM "
                     "(SELECT link_id, loop_count, BIT_AND(passed) loop_passed "
                     "FROM images "
+                    "WHERE passed IS NOT NULL "
                     "GROUP BY link_id, loop_count) AS loops "
                  "GROUP BY link_id")
     cursor = connect()
@@ -258,29 +277,31 @@ def trim_images(link: int, keep_recent: int, keep_failures: int) -> None:
                        "ORDER BY img_id DESC "
                        "LIMIT 1 OFFSET %(offset)s)")
     cursor = connect()
-    _cnx.start_transaction()
 
     """ Transfer overflow failures from images to past_failures """
-    data = {
+    transfer_data = {
         "link_id": link,
         "offset": keep_recent
     }
-    cursor.execute(transfer_statement, data)
 
     """ Remove old images from both tables """
-    data = {
+    recent_data = {
         "link_id": link,
         "offset": keep_recent
     }
-    cursor.execute(remove_images, data)
-    data = {
+
+    failure_data = {
         "link_id": link,
         "offset": keep_failures
     }
-    cursor.execute(remove_failures, data)
 
-    """ Commit transaction """
-    _cnx.commit()
+    try:
+        cursor.execute(transfer_statement, transfer_data)
+        cursor.execute(remove_images, recent_data)
+        cursor.execute(remove_failures, failure_data)
+    except Exception as e:
+        close()
+        print(e)
 
 
 # =======================================================================================================

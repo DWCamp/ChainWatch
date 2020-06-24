@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Import the unique CSS for this page -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/slideshow.css') }}">
+
+<div id="image-slideshow">
+    <div class="image-control" id="left-control">
+        <button class="control-button" id="left-button" onclick="goBack()">&lt;</button>
+    </div>
+    <div id="image-slide">
+        <div class="image-window" id="left-window">
+            <img id="left-image" class="chain-img" src="">
+        </div>
+        <div class="image-window" id="right-window">
+            <img id="right-image" class="chain-img" src="">
+        </div>
+    </div>
+    <div class="image-control" id="right-control">
+        <button class="control-button" id="right-button" onclick="advance()">&gt;</button>
+    </div>
+</div>
+
+<script>
+    var leftImages = [{% for image in left_images %}"{{image.file}}",{% endfor %}];
+    var rightImages = [{% for image in right_images %}"{{image.file}}",{% endfor %}];
+    var left = document.getElementById("left-image");
+    var right = document.getElementById("right-image");
+    var leftCounter = 0;
+    var rightCounter = 0;
+    left.src = `/imgs/${leftImages[leftCounter]}`;
+    right.src = `/imgs/${rightImages[rightCounter]}`;
+
+    function advance() {
+        leftCounter += 1;
+        rightCounter += 1;
+
+        if (rightCounter >= rightImages.length) {
+            right.style.display = "none";
+        }
+        if (leftCounter >= leftImages.length && rightCounter >= rightImages.length) {
+            leftCounter = leftImages.length - 1;
+            rightCounter = rightImages.length - 1;
+        }
+
+        if (leftCounter >= leftImages.length) {
+            left.style.display = "none";
+        } else {
+            left.style.display = "block";
+        }
+        if (rightCounter >= rightImages.length) {
+            right.style.display = "none";
+        } else {
+            right.style.display = "block";
+        }
+
+        left.src = `/imgs/${leftImages[leftCounter]}`;
+        right.src = `/imgs/${rightImages[rightCounter]}`;
+    }
+
+    function goBack() {
+        leftCounter -= 1;
+        rightCounter -= 1;
+        if (leftCounter < leftImages.length) {
+            left.style.display = "block";
+        }
+        if (rightCounter < rightImages.length) {
+            right.style.display = "block";
+        }
+        if (rightCounter < 0) {
+            leftCounter = 0;
+            rightCounter = 0;
+        }
+        left.src = `/imgs/${leftImages[leftCounter]}`;
+        right.src = `/imgs/${rightImages[rightCounter]}`;
+    }
+
+</script>
+
+{% endblock %}

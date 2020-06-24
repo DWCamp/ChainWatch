@@ -6,6 +6,14 @@ tr.fail:nth-child(even) {
   background-color: #FFCFD1;
 }
 
+tr.nomatch {
+    background-color: #DDD;
+}
+
+tr.nomatch:nth-child(even) {
+  background-color: #CCC;
+}
+
 div.link-details {
     margin-top: 15px;
     margin-bottom: 50px;
@@ -15,22 +23,27 @@ div.link-overview {
     display: inline-block;
 }
 
-div.link-delete {
+div.action-container {
     float: right;
     width: 15%;
 }
 
-button.link-delete {
+button.action {
     float: right;
     width: 100%;
     border-radius: 10px;
     border: None;
     padding: 10px;
-    background-color: #BD2323;
+    background-color: #097DBC;
     color: white;
     font-size: 1.5em;
     cursor: pointer;
     margin: 5px 10%;
+}
+
+button.action:hover {
+    transition: background-color 0.2s ease;
+    background-color: #0B99E6;
 }
 
 button.img-delete {
@@ -44,8 +57,11 @@ button.img-delete {
     cursor: pointer;
 }
 
+button.danger {
+    background-color: #BD2323;
+}
 
-button.link-delete:hover, button.img-delete:hover {
+button.danger:hover {
     transition: background-color 0.2s ease;
     background-color: #DB0F0F;
 }

@@ -163,7 +163,8 @@ def index():
     # The number of links
     link_count = dbconnection.count_links()
     overview['link_count'] = link_count
-    overview['image_count'] = dbconnection.count_images()
+    image_count = dbconnection.count_images()
+    overview['image_count'] = image_count
 
     """ Check the chain status """
     if link_count == 0:  # Create default dictionary if database is empty
@@ -186,6 +187,13 @@ def index():
             hours, remainder = divmod(time_elapsed.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
             overview['offline_dur'] = "%02dh %02dm %02ds" % (hours, minutes, seconds)
+
+    if link_count == 0:
+        overview['no_match_str'] = "N/A"
+    else:
+        no_match = dbconnection.count_no_match()
+        no_match_perc = round(100 * no_match / image_count, 2)
+        overview['no_match_str'] = "0 (0%)" if no_match is None else f"{no_match} ({no_match_perc}%)"
 
     """ List the links with the worst pass rate """
     worst_links = dbconnection.find_worst_links(CONFIG['NUM_WORST'])
@@ -253,14 +261,18 @@ def link_page(link_id: int):
     """ Gather recent images and group by camera """
 
     for image in link['image_list']:
-        image["passed"] = bool(image["passed"])
+        if image["passed"] is None:
+            result = "No Match"
+        else:
+            image["passed"] = bool(image["passed"])
+            result = "Pass" if image['passed'] else "Failed"
         img_data = {
             "id": image["img_id"],
             "date": image["time"].strftime('%Y-%m-%d'),
             "file": os.path.basename(image["filepath"]),
             "loop": image["loop_count"],
             "passed": image["passed"],
-            "result": "Pass" if image['passed'] else "Failed",
+            "result": result,
             "time": image["time"].strftime('%H:%M:%S'),
             "timestamp": image["time"]  # Leave time stamp intact for sorting
         }
@@ -272,7 +284,11 @@ def link_page(link_id: int):
     """ Gather past failures """
 
     for image in link['past_failures']:
-        image["passed"] = bool(image["passed"])
+        if image["passed"] is None:
+            result = "No Match"
+        else:
+            image["passed"] = bool(image["passed"])
+            result = "Pass" if image['passed'] else "Failed"
         image["left_camera"] = bool(image["left_camera"])
         img_data = {
             "id": image["img_id"],
@@ -281,7 +297,7 @@ def link_page(link_id: int):
             "file": os.path.basename(image["filepath"]),
             "loop": image["loop_count"],
             "passed": image["passed"],
-            "result": "Pass" if image['passed'] else "Failed",
+            "result": result,
             "time": image["time"].strftime('%H:%M:%S'),
             "timestamp": image["time"]  # Leave time stamp intact for sorting
         }
@@ -417,6 +433,40 @@ def api():
 def imgs(filename):
     # The endpoint for accessing the link images
     return send_from_directory(CONFIG['MEDIA_FOLDER'], filename)
+
+
+@app.route('/slideshow/<int:link_id>')
+def slideshow(link_id: int):
+    """
+    A page all of the recent images for a link in a slideshow
+    """
+    title = f"Link {link_id} images"
+    link = dbconnection.fetch_link(link_id)
+
+    left_image_list = []
+    right_image_list = []
+
+    """ Gather recent images and group by camera """
+
+    for image in link['image_list']:
+        image["passed"] = bool(image["passed"])
+        img_data = {
+            "date": image["time"].strftime('%Y-%m-%d'),
+            "file": os.path.basename(image["filepath"]),
+            "loop": image["loop_count"],
+            "passed": image["passed"],
+            "time": image["time"].strftime('%H:%M:%S'),
+        }
+        if image["left_camera"]:
+            left_image_list.append(img_data)
+        else:
+            right_image_list.append(img_data)
+
+    return render_template('slideshow.html',
+                           nav_list=nav_list,
+                           title=title,
+                           left_images=left_image_list,
+                           right_images=right_image_list)
 
 
 @app.route('/qr')
