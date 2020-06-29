@@ -166,6 +166,11 @@ td.inactive {
   font-weight: bold;
 }
 
+td.nomatch {
+  color: #777;
+  font-weight: bold;
+}
+
 .overview-table td {
     text-align: left;
     padding: 2px 5px;

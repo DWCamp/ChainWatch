@@ -9,10 +9,10 @@
     }
 
     function deleteLink() {
-        var req = new XMLHttpRequest();
+        const req = new XMLHttpRequest();
         req.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
                     hideModal();
                     window.location.replace("/grid");
                 } else {
@@ -25,10 +25,10 @@
     }
 
     function deleteImg(img, pf) {
-        var req = new XMLHttpRequest();
+        const req = new XMLHttpRequest();
         req.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
                     hideModal();
                     location.reload();
                 } else {
@@ -65,13 +65,17 @@
             </tr>
             <tr>
                 <td>Last Result</td>
-                {% if link.last_result == 'PASS' %}
+                {% if link.last_result is none %}
+                    <td class="nomatch">NO MATCH</td>
+                {% elif link.last_result %}
                     <td class="active">PASS</td>
-                {% elif link.last_result == 'FAIL' %}
-                    <td class="inactive">FAIL</td>
                 {% else %}
-                    <td>N/A</td>
+                    <td class="inactive">FAIL</td>
                 {% endif %}
+            </tr>
+            <tr>
+                <td>Pass Rate</td>
+                <td>{{ link.pass_rate }}</td>
             </tr>
             <tr>
                 <td>Last Image Taken</td>

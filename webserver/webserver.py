@@ -214,7 +214,11 @@ def index():
         risk_perc = round(100 * at_risk_count / link_count, 2)
         overview['at_risk_str'] = f"{at_risk_count} ({risk_perc}%)"
 
-    return render_template('index.html', curr_page='Home', nav_list=nav_list, title="Home", overview=overview)
+    return render_template('index.html',
+                           curr_page='Home',
+                           nav_list=nav_list,
+                           title="Home",
+                           overview=overview)
 
 
 @app.route('/grid')
@@ -237,7 +241,11 @@ def grid():
         link_data['pass_rate'] = round(link_data['pass_rate'] * 100, 3)  # Convert ratio to %
         link_list.append(link_data)
     link_list.sort(key=lambda i: i['link_id'])
-    return render_template('grid.html', curr_page='Status Grid', nav_list=nav_list, title=title, link_list=link_list)
+    return render_template('grid.html',
+                           curr_page='Status Grid',
+                           nav_list=nav_list,
+                           title=title,
+                           link_list=link_list)
 
 
 @app.route('/<int:link_id>')
@@ -305,18 +313,19 @@ def link_page(link_id: int):
 
     """ Compile link overview """
 
-    # Check if the most recent images on either the left or right were a failure
+    # Check if the most recent images on either the left or right were a failure or no match
     if len(left_image_list) == 0 and len(right_image_list) == 0:
         # Set last result to `None` if there are no images
         last_result = "N/A"
     else:
-        passed_recent = True
-        if len(left_image_list) > 0:
-            passed_recent = left_image_list[0]['passed']
-        if len(right_image_list) > 0:
-            # Combine the left result with the right result
-            passed_recent = passed_recent and right_image_list[0]['passed']
-        last_result = "PASS" if passed_recent else "FAIL"
+        pass_left = left_image_list[0]['passed'] if len(left_image_list) > 0 else None
+        pass_right = right_image_list[0]['passed'] if len(right_image_list) > 0 else None
+        if pass_left is None and pass_right is None:            # Both cameras have no match
+            last_result = None
+        elif pass_left is not None and pass_right is not None:  # Combine both valid inspections
+            last_result = pass_left and pass_right
+        else:                                                   # If only one result is valid, use it
+            last_result = pass_left if pass_left is not None else pass_right
 
     # Get the timestamp of the most recent link inspection, or 'N/A' if no links inspected
     if len(link['image_list']) > 0:
@@ -328,6 +337,7 @@ def link_page(link_id: int):
         "id": link_id,
         "last_checked": last_checked,
         "last_result": last_result,
+        "pass_rate": "%.2f%%" % (link['pass_rate'] * 100)
     }
 
     return render_template('link.html',

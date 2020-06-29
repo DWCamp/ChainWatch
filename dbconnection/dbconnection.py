@@ -174,18 +174,26 @@ def fetch_link(link_id: int) -> dict:
     cursor = connect()  # Verify database connection
     cursor.execute(img_statement, data)
 
-    # Compile list of images
+    # Compile list of images with column names
     image_list = [dict(zip(cursor.column_names, image)) for image in cursor]
 
     pf_statement = "SELECT * FROM past_failures WHERE link_id = %(link_id)s ORDER BY img_id DESC"
     cursor = connect()  # Create a second cursor
     cursor.execute(pf_statement, data)
 
+    # Calculate pass rate
+    pass_count = 0
+    for image in image_list:
+        if image['passed'] is not False:
+            pass_count += 1
+    pass_rate = pass_count / len(image_list)
+
     # Compile list of past failures with column names
     failure_list = [dict(zip(cursor.column_names, image)) for image in cursor]
 
     return {
         "image_list": image_list,
+        "pass_rate": pass_rate,
         "past_failures": failure_list
     }
 
@@ -234,12 +242,13 @@ def get_pass_rates() -> dict:
     Returns the pass rates for every link in a dictionary, where the keys are the ids of each link
     :return: [int: float] A dictionary of each link's pass rate, with the link's id as the key
     """
-    statement = ("SELECT link_id, AVG(loop_passed) pass_rate FROM "
-                    "(SELECT link_id, loop_count, BIT_AND(passed) loop_passed "
-                    "FROM images "
-                    "WHERE passed IS NOT NULL "
-                    "GROUP BY link_id, loop_count) AS loops "
-                 "GROUP BY link_id")
+    statement = ("""
+SELECT link_id, AVG(loop_passed) pass_rate FROM 
+    (SELECT link_id, loop_count, BIT_AND(passed) loop_passed 
+     FROM images 
+     WHERE passed IS NOT NULL 
+     GROUP BY link_id, loop_count) AS loops 
+GROUP BY link_id""")
     cursor = connect()
     cursor.execute(statement)
     results = {}
@@ -296,10 +305,12 @@ def trim_images(link: int, keep_recent: int, keep_failures: int) -> None:
     }
 
     try:
-        cursor.execute(transfer_statement, transfer_data)
-        cursor.execute(remove_images, recent_data)
-        cursor.execute(remove_failures, failure_data)
-    except Exception as e:
+        _cnx.start_transaction()                           # Begin a transaction
+        cursor.execute(transfer_statement, transfer_data)  # Transfer old failed inspections to past_failures
+        cursor.execute(remove_images, recent_data)         # Trim old inspections from images
+        cursor.execute(remove_failures, failure_data)      # Trim old inspections from past_failures
+        _cnx.commit()                                      # Commit transaction
+    except Exception as e:  # If the transaction fails, abort and close the connection to prevent a crash
         close()
         print(e)
 

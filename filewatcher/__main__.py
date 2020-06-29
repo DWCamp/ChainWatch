@@ -43,8 +43,7 @@ def parse_name(file_name: str):
         print(f"Couldn't parse file name `{file_name}`")
         return None
 
-    # Check which camera was used
-    camera = parsed.group(1)
+    camera = parsed.group(1)  # Get the camera name
     if parsed.group(2) == CONFIG['PASS_TAG']:
         passed = True
     elif parsed.group(2) == CONFIG['FAIL_TAG']:
