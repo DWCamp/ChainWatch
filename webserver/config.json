@@ -2,7 +2,7 @@
   "_comment_SPEC_FILENAME": "Tells webserver where the software spec file is located in the static folder",
   "SPEC_FILENAME": "ChainWatch Spec.pdf",
   "_comment_MEDIA_FOLDER": "The folder where filewatcher stores the chain images",
-  "MEDIA_FOLDER": "/srv/ftp/",
+  "MEDIA_FOLDER": "/srv/storage/ChainWatch/",
   "_comment_PORT": "The port the website is hosted on. The webserver must be restarted for this to take effect",
   "PORT": 5000,
   "_comment_ACTIVE_DELAY": "The number of seconds since last read after which the line is no longer considered 'active'",
