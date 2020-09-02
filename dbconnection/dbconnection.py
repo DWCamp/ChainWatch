@@ -46,7 +46,7 @@ def close() -> None:
 # =======================================================================================================
 
 
-def log_image(link_id: int, loop: int, left_camera: bool, passed: bool, file_path: str) -> None:
+def log_image(link_id: int, loop: int, left_camera: bool, passed: bool, file_path: str, time: str = None) -> None:
     """
     Adds an entry into the database for a given image
     :param link_id: The link number
@@ -54,16 +54,19 @@ def log_image(link_id: int, loop: int, left_camera: bool, passed: bool, file_pat
     :param left_camera: `True` if this image was captured with the left camera, `False` if captured with the right
     :param passed: Whether link passed the inspection (i.e. a 'GOOD' image)
     :param file_path: The path to the file where the image is being stored
+    :param time: The MySQL.Datetime equivalent string for when the image was first saved.
+        If left out, the current time will be used
     """
     global _last_id
-    statement = "INSERT INTO images (link_id, loop_count, left_camera, passed, filepath) VALUES (%(link_id)s, " \
-                "%(loop)s, %(left_camera)s, %(passed)s, %(filepath)s)"
+    statement = "INSERT INTO images (link_id, loop_count, left_camera, passed, filepath, time) VALUES (%(link_id)s, " \
+                "%(loop)s, %(left_camera)s, %(passed)s, %(filepath)s, %(time)s)"
     data = {
         'link_id': link_id,
         'loop': loop,
         'left_camera': left_camera,
         'passed': passed,
-        'filepath': file_path
+        'filepath': file_path,
+        'time': time
     }
     cursor = connect()  # Verify database connection
     cursor.execute(statement, data)
