@@ -38,7 +38,7 @@ def parse_name(file_name: str):
             The name of the camera this photo came from
     """
     import re
-    parsed = re.search(r"(\w+)_(\w+)_LP-(\d+)_ID-(\d+)", file_name)
+    parsed = re.search(r"(\w+)_(\w+)_LP-(\d+)_ID-(\d+)(?:_(\d{10}))?", file_name)
     if parsed is None:  # Reject invalid
         print(f"Couldn't parse file name `{file_name}`")
         return None
@@ -55,7 +55,8 @@ def parse_name(file_name: str):
         return None
     loop_id = int(parsed.group(3))
     link_id = int(parsed.group(4))
-    return passed, loop_id, link_id, camera
+    timestamp = int(parsed.group(5)) if parsed.group(5) is not None else None
+    return passed, loop_id, link_id, camera, timestamp
 
 
 def detect_file(data: (FileEvent, str, str)) -> None:
@@ -67,23 +68,22 @@ def detect_file(data: (FileEvent, str, str)) -> None:
         - the name of the folder the file was inside
     """
     (event, name, dir_path) = data
-
-    # Ignore the module directory
-    if dir_path == MODULE_DIR:
+    if dir_path == MODULE_DIR:  # Ignore the module directory
         return
 
-    # Parse filename
+    """ Parse filename """
+
     file_data = parse_name(name)
     if file_data is None:
         return
-    (passed, loop_count, link_id, camera) = parse_name(name)
-    (root, parent_dir) = os.path.split(dir_path)
-    print(f"Found `{name}` from camera `{parent_dir}`")
+    (passed, loop_count, link_id, camera, timestamp) = parse_name(name)
+    print(f"Found `{name}` from camera `{camera}`")
 
-    # Get current time
-    time = datetime.utcnow()
+    # Convert timestamp integer to MySQL formatted datetime string
+    timestr = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S') if timestamp is not None else None
 
-    # Process camera name
+    """ Process camera name """
+
     if camera == CONFIG['LEFT_CAMERA']:
         left_camera = True
     elif camera == CONFIG['RIGHT_CAMERA']:
@@ -91,13 +91,22 @@ def detect_file(data: (FileEvent, str, str)) -> None:
     else:
         left_camera = None
 
-    # Rename and move file
+    """ Move file """
+
     source = f"{dir_path}/{name}"
-    filename, file_ext = os.path.splitext(name)
-    new_name = f"{filename}_{int(time.timestamp())}{file_ext}"
-    dest = f"{CONFIG['IMG_DESTINATION']}/{new_name}"
+    if timestamp is not None:  # Don't rename file if POSIX timestamp already in filename
+        dest = f"{CONFIG['IMG_DESTINATION']}/{name}"
+    else:
+        filename, file_ext = os.path.splitext(name)
+        time = datetime.utcnow()                                    # Get the current time
+        new_name = f"{filename}_{int(time.timestamp())}{file_ext}"  # Encode POSIX timestamp in filename
+        dest = f"{CONFIG['IMG_DESTINATION']}/{new_name}"
+
     shutil.move(source, dest)  # Move the file into the destination folder
-    dbconnection.log_image(link_id, loop_count, left_camera, passed, dest)  # Record image to database
+
+    """ Update Database """
+
+    dbconnection.log_image(link_id, loop_count, left_camera, passed, dest, time=timestr)  # Add image to database
     dbconnection.trim_images(link_id, CONFIG['RECENT_IMAGE_LIMIT'], CONFIG['FAIL_IMAGE_LIMIT'])
 
 

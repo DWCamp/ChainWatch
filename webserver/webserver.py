@@ -184,9 +184,13 @@ def index():
         time_elapsed = datetime.now() - overview['most_recent']['time']
         overview['active'] = time_elapsed < timedelta(seconds=CONFIG['ACTIVE_DELAY'])
         if not overview['active']:
-            hours, remainder = divmod(time_elapsed.seconds, 3600)
+            days, remainder = divmod(int(time_elapsed.total_seconds()), 86400)
+            hours, remainder = divmod(remainder, 3600)
             minutes, seconds = divmod(remainder, 60)
-            overview['offline_dur'] = "%02dh %02dm %02ds" % (hours, minutes, seconds)
+            if days > 0:
+                overview['offline_dur'] = "%02dd %02dh %02dm %02ds" % (days, hours, minutes, seconds)
+            else:
+                overview['offline_dur'] = "%02dh %02dm %02ds" % (hours, minutes, seconds)
 
     if link_count == 0:
         overview['no_match_str'] = "N/A"
